@@ -1,0 +1,8 @@
+{
+    "mae": 9576.370782459586,
+    "psnr": 27.58069452856627,
+    "ssim": 0.7711619734764099,
+    "pixel_accuracy": 64.02503119574652,
+    "experiment_name": "baseline",
+    "checkpoint": "checkpoints/baseline/best_model.pth"
+}

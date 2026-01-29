@@ -1,0 +1,8 @@
+{
+    "mae": 12030.04592867714,
+    "psnr": 26.282715080780008,
+    "ssim": 0.6879553198814392,
+    "pixel_accuracy": 51.757840293787,
+    "experiment_name": "edge_aware",
+    "checkpoint": "checkpoints/exp_edge_0.3/best_model.pth"
+}

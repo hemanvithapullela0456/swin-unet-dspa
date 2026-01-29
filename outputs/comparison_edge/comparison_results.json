@@ -1,0 +1,51 @@
+{
+    "baseline": {
+        "mae": 9576.370782459586,
+        "psnr": 27.58069452856627,
+        "ssim": 0.7711619734764099,
+        "pixel_accuracy": 64.02503119574652,
+        "experiment_name": "baseline",
+        "checkpoint": "checkpoints/baseline/best_model.pth"
+    },
+    "edge_aware": {
+        "mae": 12030.04592867714,
+        "psnr": 26.282715080780008,
+        "ssim": 0.6879553198814392,
+        "pixel_accuracy": 51.757840293787,
+        "experiment_name": "edge_aware",
+        "checkpoint": "checkpoints/exp_edge_0.3/best_model.pth"
+    },
+    "improvements": {
+        "mae": {
+            "baseline": 9576.370782459586,
+            "edge_aware": 12030.04592867714,
+            "absolute_difference": -2453.6751462175544,
+            "percentage_improvement": -25.622181951348328,
+            "is_better": false
+        },
+        "psnr": {
+            "baseline": 27.58069452856627,
+            "edge_aware": 26.282715080780008,
+            "absolute_difference": -1.2979794477862612,
+            "percentage_improvement": -4.706115890018285,
+            "is_better": false
+        },
+        "ssim": {
+            "baseline": 0.7711619734764099,
+            "edge_aware": 0.6879553198814392,
+            "absolute_difference": -0.0832066535949707,
+            "percentage_improvement": -10.78977652643761,
+            "is_better": false
+        },
+        "pixel_accuracy": {
+            "baseline": 64.02503119574652,
+            "edge_aware": 51.757840293787,
+            "absolute_difference": -12.267190901959523,
+            "percentage_improvement": -19.159992073185418,
+            "is_better": false
+        }
+    },
+    "verdict": "\u2717 EDGE-AWARE LOSS DOES NOT IMPROVE RESULTS",
+    "better_count": 0,
+    "total_metrics": 4
+}

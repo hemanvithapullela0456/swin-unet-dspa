@@ -21,6 +21,16 @@ from dataset import get_data_loaders
 from model import SwinUNetpp
 from evaluate import evaluate_metrics
 
+def make_json_safe(d):
+    for k, v in d.items():
+        if isinstance(v, dict):
+            make_json_safe(v)
+        elif hasattr(v, "item"):   # numpy / torch scalar
+            d[k] = float(v.item())
+        elif isinstance(v, (list, tuple)):
+            d[k] = [float(x) if hasattr(x, "item") else x for x in v]
+    return d
+
 
 def main():
     print("\n" + "=" * 80)
@@ -62,7 +72,8 @@ def main():
     
     baseline_metrics['experiment_name'] = 'baseline'
     baseline_metrics['checkpoint'] = baseline_checkpoint
-    
+    baseline_metrics = make_json_safe(baseline_metrics)
+
     # Save baseline metrics
     baseline_file = os.path.join(comparison_dir, 'baseline_metrics.json')
     with open(baseline_file, 'w') as f:
@@ -77,7 +88,7 @@ def main():
     print("STEP 2: EVALUATING EDGE-AWARE MODEL")
     print("=" * 80)
     
-    edge_checkpoint = os.path.join('checkpoints/exp_edge_aware/', 'best_model.pth')
+    edge_checkpoint = os.path.join('checkpoints/exp_edge_0.3/', 'best_model.pth')
     
     if not os.path.exists(edge_checkpoint):
         print(f"\n✗ Edge-aware checkpoint not found: {edge_checkpoint}")
@@ -96,7 +107,8 @@ def main():
     
     edge_metrics['experiment_name'] = 'edge_aware'
     edge_metrics['checkpoint'] = edge_checkpoint
-    
+    edge_metrics = make_json_safe(edge_metrics)
+
     # Save edge-aware metrics
     edge_file = os.path.join(comparison_dir, 'edge_aware_metrics.json')
     with open(edge_file, 'w') as f:
