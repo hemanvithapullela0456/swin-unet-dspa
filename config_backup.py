@@ -22,7 +22,7 @@ class Config:
     BATCH_SIZE = 4  # Increase if you have enough GPU memory
     NUM_WORKERS = 4  # Use 0 on Windows if you have issues
     START_EPOCH = 1
-    END_EPOCH = 50  # Set to 50 for faster experiments
+    END_EPOCH = 100  # Total epochs to train
     
     LEARNING_RATE = 1e-4
     WEIGHT_DECAY = 1e-4
@@ -53,13 +53,12 @@ class Config:
     # ========================================
     L1_WEIGHT = 1.0
     PERCEPTUAL_WEIGHT = 0.01
-    MULTISCALE_WEIGHT = 0.5  # NEW: Multiscale loss weight (set to 0.0 to disable)
 
     # ========================================
     # PATHS
     # ========================================
     DATASET_PATH = 'data/maps/'
-    CHECKPOINT_DIR = 'checkpoints/exp_multiscale/'  # New directory
+    CHECKPOINT_DIR = 'checkpoints/'
     OUTPUT_DIR = 'outputs/'
     
     # ========================================
@@ -82,10 +81,6 @@ class Config:
         print(f"Window Size: {cls.WINDOW_SIZE}")
         print(f"Depths: {cls.DEPTHS}")
         print(f"Num Heads: {cls.NUM_HEADS}")
-        print(f"Loss Weights:")
-        print(f"  - L1: {cls.L1_WEIGHT}")
-        print(f"  - Perceptual: {cls.PERCEPTUAL_WEIGHT}")
-        print(f"  - Multiscale: {cls.MULTISCALE_WEIGHT}")
         print(f"Device: {cls.DEVICE}")
         print(f"Dataset Path: {cls.DATASET_PATH}")
         print(f"Checkpoint Dir: {cls.CHECKPOINT_DIR}")

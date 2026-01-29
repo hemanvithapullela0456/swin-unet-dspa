@@ -7,7 +7,6 @@ import os
 import re
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
 from torch.cuda.amp import autocast, GradScaler
 import torchvision.models as models
@@ -67,65 +66,6 @@ class VGGPerceptualLoss(nn.Module):
         loss += nn.functional.l1_loss(x4, y4)
 
         return loss / 4.0
-
-
-class MultiscaleLoss(nn.Module):
-    """
-    Multiscale L1 loss at multiple resolutions
-    Compares predictions and targets at full, half, and quarter resolution
-    """
-    
-    def __init__(self, scales=[1.0, 0.5, 0.25], weights=[1.0, 0.5, 0.25]):
-        """
-        Args:
-            scales: List of scale factors (1.0 = full res, 0.5 = half, 0.25 = quarter)
-            weights: Corresponding weights for each scale
-        """
-        super().__init__()
-        self.scales = scales
-        self.weights = weights
-        self.l1_loss = nn.L1Loss()
-        
-        print(f"✓ MultiscaleLoss initialized with scales: {scales}, weights: {weights}")
-    
-    def forward(self, pred, target):
-        """
-        Args:
-            pred: predicted image [B, C, H, W]
-            target: target image [B, C, H, W]
-        Returns:
-            Weighted sum of L1 losses at multiple scales
-        """
-        total_loss = 0.0
-        
-        for scale, weight in zip(self.scales, self.weights):
-            if scale == 1.0:
-                # Full resolution - no downsampling needed
-                scaled_pred = pred
-                scaled_target = target
-            else:
-                # Downscale using bilinear interpolation
-                h, w = pred.shape[2], pred.shape[3]
-                new_h, new_w = int(h * scale), int(w * scale)
-                
-                scaled_pred = F.interpolate(
-                    pred, 
-                    size=(new_h, new_w), 
-                    mode='bilinear', 
-                    align_corners=False
-                )
-                scaled_target = F.interpolate(
-                    target, 
-                    size=(new_h, new_w), 
-                    mode='bilinear', 
-                    align_corners=False
-                )
-            
-            # Calculate L1 loss at this scale
-            loss_at_scale = self.l1_loss(scaled_pred, scaled_target)
-            total_loss += weight * loss_at_scale
-        
-        return total_loss
 
 
 # ============================================================================
@@ -192,17 +132,16 @@ def find_latest_checkpoint(config):
 
 
 # ============================================================================
-# TRAINING & VALIDATION (WITH MULTISCALE SUPPORT)
+# TRAINING & VALIDATION
 # ============================================================================
 
 def train_one_epoch(model, train_loader, optimizer, scaler, l1_criterion, 
-                    perceptual_criterion, config, epoch, multiscale_criterion=None):
+                    perceptual_criterion, config, epoch):
     """Train for one epoch"""
     model.train()
     running_loss = 0.0
     running_l1_loss = 0.0
     running_perceptual_loss = 0.0
-    running_multiscale_loss = 0.0
 
     pbar = tqdm(train_loader, desc=f"Epoch {epoch}/{config.END_EPOCH} [TRAIN]")
 
@@ -221,17 +160,10 @@ def train_one_epoch(model, train_loader, optimizer, scaler, l1_criterion,
             # Calculate losses
             l1_loss = l1_criterion(predicted_map, target_map)
             perceptual_loss = perceptual_criterion(predicted_map, target_map)
-            
-            # Calculate multiscale loss if enabled
-            if multiscale_criterion is not None:
-                multiscale_loss = multiscale_criterion(predicted_map, target_map)
-            else:
-                multiscale_loss = torch.tensor(0.0).to(config.DEVICE)
 
             # Combined loss
             total_loss = (config.L1_WEIGHT * l1_loss +
-                         config.PERCEPTUAL_WEIGHT * perceptual_loss +
-                         config.MULTISCALE_WEIGHT * multiscale_loss)
+                         config.PERCEPTUAL_WEIGHT * perceptual_loss)
 
         # Backward pass
         scaler.scale(total_loss).backward()
@@ -242,39 +174,28 @@ def train_one_epoch(model, train_loader, optimizer, scaler, l1_criterion,
         running_loss += total_loss.item()
         running_l1_loss += l1_loss.item()
         running_perceptual_loss += perceptual_loss.item()
-        running_multiscale_loss += multiscale_loss.item()
 
         # Update progress bar
-        if multiscale_criterion is not None:
-            pbar.set_postfix({
-                'Loss': f'{total_loss.item():.4f}',
-                'L1': f'{l1_loss.item():.4f}',
-                'Perc': f'{perceptual_loss.item():.4f}',
-                'Multi': f'{multiscale_loss.item():.4f}'
-            })
-        else:
-            pbar.set_postfix({
-                'Loss': f'{total_loss.item():.4f}',
-                'L1': f'{l1_loss.item():.4f}',
-                'Perc': f'{perceptual_loss.item():.4f}'
-            })
+        pbar.set_postfix({
+            'Loss': f'{total_loss.item():.4f}',
+            'L1': f'{l1_loss.item():.4f}',
+            'Perc': f'{perceptual_loss.item():.4f}'
+        })
 
     # Calculate average losses
     avg_loss = running_loss / len(train_loader)
     avg_l1 = running_l1_loss / len(train_loader)
     avg_perc = running_perceptual_loss / len(train_loader)
-    avg_multi = running_multiscale_loss / len(train_loader)
 
-    return avg_loss, avg_l1, avg_perc, avg_multi
+    return avg_loss, avg_l1, avg_perc
 
 
-def validate(model, val_loader, l1_criterion, perceptual_criterion, config, epoch, multiscale_criterion=None):
+def validate(model, val_loader, l1_criterion, perceptual_criterion, config, epoch):
     """Validate the model"""
     model.eval()
     running_loss = 0.0
     running_l1_loss = 0.0
     running_perceptual_loss = 0.0
-    running_multiscale_loss = 0.0
 
     pbar = tqdm(val_loader, desc=f"Epoch {epoch}/{config.END_EPOCH} [VAL]")
 
@@ -291,45 +212,28 @@ def validate(model, val_loader, l1_criterion, perceptual_criterion, config, epoc
                 # Calculate losses
                 l1_loss = l1_criterion(predicted_map, target_map)
                 perceptual_loss = perceptual_criterion(predicted_map, target_map)
-                
-                # Calculate multiscale loss if enabled
-                if multiscale_criterion is not None:
-                    multiscale_loss = multiscale_criterion(predicted_map, target_map)
-                else:
-                    multiscale_loss = torch.tensor(0.0).to(config.DEVICE)
 
                 total_loss = (config.L1_WEIGHT * l1_loss +
-                             config.PERCEPTUAL_WEIGHT * perceptual_loss +
-                             config.MULTISCALE_WEIGHT * multiscale_loss)
+                             config.PERCEPTUAL_WEIGHT * perceptual_loss)
 
             # Track losses
             running_loss += total_loss.item()
             running_l1_loss += l1_loss.item()
             running_perceptual_loss += perceptual_loss.item()
-            running_multiscale_loss += multiscale_loss.item()
 
             # Update progress bar
-            if multiscale_criterion is not None:
-                pbar.set_postfix({
-                    'Loss': f'{total_loss.item():.4f}',
-                    'L1': f'{l1_loss.item():.4f}',
-                    'Perc': f'{perceptual_loss.item():.4f}',
-                    'Multi': f'{multiscale_loss.item():.4f}'
-                })
-            else:
-                pbar.set_postfix({
-                    'Loss': f'{total_loss.item():.4f}',
-                    'L1': f'{l1_loss.item():.4f}',
-                    'Perc': f'{perceptual_loss.item():.4f}'
-                })
+            pbar.set_postfix({
+                'Loss': f'{total_loss.item():.4f}',
+                'L1': f'{l1_loss.item():.4f}',
+                'Perc': f'{perceptual_loss.item():.4f}'
+            })
 
     # Calculate average losses
     avg_loss = running_loss / len(val_loader)
     avg_l1 = running_l1_loss / len(val_loader)
     avg_perc = running_perceptual_loss / len(val_loader)
-    avg_multi = running_multiscale_loss / len(val_loader)
 
-    return avg_loss, avg_l1, avg_perc, avg_multi
+    return avg_loss, avg_l1, avg_perc
 
 
 def train_model(model, train_loader, val_loader, config, resume=False):
@@ -348,14 +252,6 @@ def train_model(model, train_loader, val_loader, config, resume=False):
 
     l1_criterion = nn.L1Loss()
     perceptual_criterion = VGGPerceptualLoss().to(config.DEVICE)
-    
-    # Initialize multiscale loss if weight > 0
-    multiscale_criterion = None
-    if hasattr(config, 'MULTISCALE_WEIGHT') and config.MULTISCALE_WEIGHT > 0:
-        multiscale_criterion = MultiscaleLoss().to(config.DEVICE)
-        print(f"✓ Multiscale Loss enabled with weight: {config.MULTISCALE_WEIGHT}")
-    else:
-        print("✓ Multiscale Loss disabled")
 
     start_epoch = config.START_EPOCH
 
@@ -382,37 +278,29 @@ def train_model(model, train_loader, val_loader, config, resume=False):
         print(f"{'=' * 60}")
 
         # Train one epoch
-        train_loss, train_l1, train_perc, train_multi = train_one_epoch(
+        train_loss, train_l1, train_perc = train_one_epoch(
             model, train_loader, optimizer, scaler,
-            l1_criterion, perceptual_criterion, config, epoch,
-            multiscale_criterion=multiscale_criterion
+            l1_criterion, perceptual_criterion, config, epoch
         )
 
         # Print training summary
         print(f"\n{'=' * 60}")
         print(f"EPOCH {epoch} TRAINING SUMMARY")
         print(f"{'=' * 60}")
-        if multiscale_criterion is not None:
-            print(f"Train Loss: {train_loss:.4f} | L1: {train_l1:.4f} | Perc: {train_perc:.4f} | Multi: {train_multi:.4f}")
-        else:
-            print(f"Train Loss: {train_loss:.4f} | L1: {train_l1:.4f} | Perceptual: {train_perc:.4f}")
+        print(f"Train Loss: {train_loss:.4f} | L1: {train_l1:.4f} | Perceptual: {train_perc:.4f}")
         print(f"{'=' * 60}")
 
         # Validate periodically
         val_loss = None
         if epoch % 5 == 0 or epoch == config.END_EPOCH:
-            val_loss, val_l1, val_perc, val_multi = validate(
+            val_loss, val_l1, val_perc = validate(
                 model, val_loader,
-                l1_criterion, perceptual_criterion, config, epoch,
-                multiscale_criterion=multiscale_criterion
+                l1_criterion, perceptual_criterion, config, epoch
             )
             print(f"\n{'=' * 60}")
             print(f"EPOCH {epoch} VALIDATION SUMMARY")
             print(f"{'=' * 60}")
-            if multiscale_criterion is not None:
-                print(f"Val Loss:   {val_loss:.4f} | L1: {val_l1:.4f} | Perc: {val_perc:.4f} | Multi: {val_multi:.4f}")
-            else:
-                print(f"Val Loss:   {val_loss:.4f} | L1: {val_l1:.4f} | Perceptual: {val_perc:.4f}")
+            print(f"Val Loss:   {val_loss:.4f} | L1: {val_l1:.4f} | Perceptual: {val_perc:.4f}")
             print(f"{'=' * 60}")
 
             # Save checkpoint

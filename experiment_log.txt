@@ -1,0 +1,104 @@
+[2026-01-29 14:22:22] ================================================================================
+[2026-01-29 14:22:22] AUTOMATED EDGE-AWARE LOSS EXPERIMENTS
+[2026-01-29 14:22:22] ================================================================================
+[2026-01-29 14:22:22] This will take 2-3 hours. You can leave and come back!
+[2026-01-29 14:22:22] 
+[2026-01-29 14:22:22] Experiments to run:
+[2026-01-29 14:22:22]   1. Edge weight = 0.3 (conservative)
+[2026-01-29 14:22:22]   2. Edge weight = 0.5 (balanced)
+[2026-01-29 14:22:22]   3. Edge weight = 0.7 (aggressive)
+[2026-01-29 14:22:22]   4. Edge weight = 1.0 (very aggressive)
+[2026-01-29 14:22:22] 
+[2026-01-29 14:22:22] Starting in 5 seconds... (Ctrl+C to cancel)
+[2026-01-29 14:22:27] 
+[2026-01-29 14:22:27] ================================================================================
+[2026-01-29 14:22:27] STEP 0: LOADING BASELINE RESULTS
+[2026-01-29 14:22:27] ================================================================================
+[2026-01-29 14:22:27] Evaluating baseline...
+[2026-01-29 14:22:52] ✓ Evaluation complete: MAE=9576.37, PSNR=27.58
+[2026-01-29 14:22:52] ✓ Baseline metrics saved: outputs/auto_experiment\baseline_metrics.json
+[2026-01-29 14:22:52]   MAE: 9576.37
+[2026-01-29 14:22:52]   PSNR: 27.58 dB
+[2026-01-29 14:22:52]   SSIM: 0.7712
+[2026-01-29 14:22:52]   Pixel Accuracy: 64.03%
+[2026-01-29 14:22:52] 
+[2026-01-29 14:22:52] ================================================================================
+[2026-01-29 14:22:52] EXPERIMENT 1/4: EDGE WEIGHT = 0.3
+[2026-01-29 14:22:52] ================================================================================
+[2026-01-29 14:22:52] ✓ Updated config: EDGE_WEIGHT = 0.3
+[2026-01-29 14:22:52] Training with edge weight 0.3 for 50 epochs...
+[2026-01-29 14:22:52] This will take ~30-45 minutes...
+[2026-01-29 14:22:52] Starting: Training with edge weight 0.3
+[2026-01-29 14:22:52] Command: python train_edge.py --epochs 50 --edge-weight 0.3
+[2026-01-29 14:22:55] ✗ Failed: Training with edge weight 0.3
+[2026-01-29 14:22:55] ✗ Training failed for edge weight 0.3
+[2026-01-29 14:22:55]   Check log: outputs/auto_experiment\training_edge_0.3.log
+[2026-01-29 14:22:55] 
+[2026-01-29 14:22:55] ================================================================================
+[2026-01-29 14:22:55] EXPERIMENT 2/4: EDGE WEIGHT = 0.5
+[2026-01-29 14:22:55] ================================================================================
+[2026-01-29 14:22:55] ✓ Updated config: EDGE_WEIGHT = 0.5
+[2026-01-29 14:22:55] Training with edge weight 0.5 for 50 epochs...
+[2026-01-29 14:22:55] This will take ~30-45 minutes...
+[2026-01-29 14:22:55] Starting: Training with edge weight 0.5
+[2026-01-29 14:22:55] Command: python train_edge.py --epochs 50 --edge-weight 0.5
+[2026-01-29 14:22:57] ✗ Failed: Training with edge weight 0.5
+[2026-01-29 14:22:57] ✗ Training failed for edge weight 0.5
+[2026-01-29 14:22:57]   Check log: outputs/auto_experiment\training_edge_0.5.log
+[2026-01-29 14:22:57] 
+[2026-01-29 14:22:57] ================================================================================
+[2026-01-29 14:22:57] EXPERIMENT 3/4: EDGE WEIGHT = 0.7
+[2026-01-29 14:22:57] ================================================================================
+[2026-01-29 14:22:57] ✓ Updated config: EDGE_WEIGHT = 0.7
+[2026-01-29 14:22:57] Training with edge weight 0.7 for 50 epochs...
+[2026-01-29 14:22:57] This will take ~30-45 minutes...
+[2026-01-29 14:22:57] Starting: Training with edge weight 0.7
+[2026-01-29 14:22:57] Command: python train_edge.py --epochs 50 --edge-weight 0.7
+[2026-01-29 14:23:00] ✗ Failed: Training with edge weight 0.7
+[2026-01-29 14:23:00] ✗ Training failed for edge weight 0.7
+[2026-01-29 14:23:00]   Check log: outputs/auto_experiment\training_edge_0.7.log
+[2026-01-29 14:23:00] 
+[2026-01-29 14:23:00] ================================================================================
+[2026-01-29 14:23:00] EXPERIMENT 4/4: EDGE WEIGHT = 1.0
+[2026-01-29 14:23:00] ================================================================================
+[2026-01-29 14:23:00] ✓ Updated config: EDGE_WEIGHT = 1.0
+[2026-01-29 14:23:00] Training with edge weight 1.0 for 50 epochs...
+[2026-01-29 14:23:00] This will take ~30-45 minutes...
+[2026-01-29 14:23:00] Starting: Training with edge weight 1.0
+[2026-01-29 14:23:00] Command: python train_edge.py --epochs 50 --edge-weight 1.0
+[2026-01-29 14:23:03] ✗ Failed: Training with edge weight 1.0
+[2026-01-29 14:23:03] ✗ Training failed for edge weight 1.0
+[2026-01-29 14:23:03]   Check log: outputs/auto_experiment\training_edge_1.0.log
+[2026-01-29 14:23:03] 
+[2026-01-29 14:23:03] ================================================================================
+[2026-01-29 14:23:03] ALL EXPERIMENTS COMPLETED!
+[2026-01-29 14:23:03] ================================================================================
+[2026-01-29 14:23:03] Total runtime: 0.01 hours (0.7 minutes)
+[2026-01-29 14:23:03] ================================================================================
+[2026-01-29 14:23:03] COMPARING ALL EXPERIMENTS
+[2026-01-29 14:23:03] ================================================================================
+[2026-01-29 14:23:03] ✓ Saved comparison data: outputs/auto_experiment\complete_comparison.json
+[2026-01-29 14:23:03] ✓ Saved text report: outputs/auto_experiment\experiment_report.txt
+[2026-01-29 14:23:03] 
+[2026-01-29 14:23:03] ================================================================================
+[2026-01-29 14:23:03] GENERATING VISUALIZATIONS
+[2026-01-29 14:23:03] ================================================================================
+[2026-01-29 14:23:03] 
+[2026-01-29 14:23:03] ================================================================================
+[2026-01-29 14:23:03] EXPERIMENT SUMMARY
+[2026-01-29 14:23:03] ================================================================================
+[2026-01-29 14:23:03] 
+[2026-01-29 14:23:03] Generated files:
+[2026-01-29 14:23:03]   - outputs/auto_experiment/complete_comparison.json
+[2026-01-29 14:23:03]   - outputs/auto_experiment/experiment_report.txt
+[2026-01-29 14:23:03]   - outputs/auto_experiment/baseline_metrics.json
+[2026-01-29 14:23:03]   - experiment_log.txt (this log)
+[2026-01-29 14:23:03] 
+[2026-01-29 14:23:03] 
+[2026-01-29 14:23:03] ================================================================================
+[2026-01-29 14:23:03] ALL DONE! Check the reports in outputs/auto_experiment/
+[2026-01-29 14:23:03] ================================================================================
+[2026-01-29 14:23:03] 
+[2026-01-29 14:23:03] Total runtime: 0.01 hours
+[2026-01-29 14:23:03] Main report: outputs/auto_experiment/experiment_report.txt
+[2026-01-29 14:23:03] Detailed log: experiment_log.txt

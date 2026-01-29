@@ -1,0 +1,34 @@
+================================================================================
+SWIN-UNET: BASELINE vs MULTISCALE LOSS COMPARISON
+================================================================================
+
+Evaluation Date: 2026-01-29 14:05:09
+
+BASELINE CONFIGURATION:
+  - Checkpoint: checkpoints/baseline/best_model.pth
+  - L1 Weight: 1.0
+  - Perceptual Weight: 0.01
+  - Multiscale Weight: 0.0
+
+MULTISCALE CONFIGURATION:
+  - Checkpoint: checkpoints/exp_multiscale/best_model.pth
+  - L1 Weight: 1.0
+  - Perceptual Weight: 0.01
+  - Multiscale Weight: 0.5
+
+--------------------------------------------------------------------------------
+METRICS COMPARISON:
+--------------------------------------------------------------------------------
+
+Metric               Baseline        Multiscale      Difference      Improvement %  
+--------------------------------------------------------------------------------
+MAE                  9576.370782     12255.683434    -2679.312651    -27.98         %
+PSNR                 27.58           26.20           -1.38           -5.02          %
+SSIM                 0.7712          0.6814          -0.0898         -11.65         %
+PIXEL_ACCURACY       64.03           51.15           -12.87          -20.11         %
+
+--------------------------------------------------------------------------------
+SUMMARY:
+--------------------------------------------------------------------------------
+
+Metrics improved: 1/4

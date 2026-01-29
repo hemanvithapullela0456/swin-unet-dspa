@@ -1,7 +1,7 @@
 EVALUATION METRICS
 ============================================================
-Checkpoint: checkpoints/best_model.pth
-Mean Absolute Error: 9576.286689
-Peak Signal-to-Noise Ratio: 27.58 dB
-Structural Similarity Index: 0.7712
-Pixel Accuracy: 64.03 %
+Checkpoint: checkpoints/expN_*/best_model.pth
+Mean Absolute Error: 163652.637295
+Peak Signal-to-Noise Ratio: 7.23 dB
+Structural Similarity Index: 0.2309
+Pixel Accuracy: 0.00 %

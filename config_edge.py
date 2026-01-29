@@ -1,8 +1,7 @@
 """
-Configuration file for Swin-UNET training
+Configuration file for Swin-UNET with Edge-Aware Loss
 Edit these settings according to your needs
 """
-
 import torch
 
 class Config:
@@ -15,7 +14,7 @@ class Config:
     PATCH_SIZE = 4
     IN_CHANNELS = 3
     OUT_CHANNELS = 3
-
+    
     # ========================================
     # TRAINING SETTINGS
     # ========================================
@@ -27,7 +26,7 @@ class Config:
     LEARNING_RATE = 1e-4
     WEIGHT_DECAY = 1e-4
     SAVE_EVERY = 5  # Save checkpoint every N epochs
-
+    
     # ========================================
     # MODEL ARCHITECTURE
     # ========================================
@@ -37,7 +36,7 @@ class Config:
     NUM_HEADS = [3, 6, 12, 24]
     WINDOW_SIZE = 8
     MLP_RATIO = 4.0
-
+    
     # ========================================
     # REGULARIZATION
     # ========================================
@@ -47,26 +46,29 @@ class Config:
     
     QKV_BIAS = True
     PATCH_NORM = True
-
+    
     # ========================================
     # LOSS WEIGHTS
     # ========================================
     L1_WEIGHT = 1.0
     PERCEPTUAL_WEIGHT = 0.01
-    MULTISCALE_WEIGHT = 0.5  # NEW: Multiscale loss weight (set to 0.0 to disable)
-
+    EDGE_WEIGHT = 1.0  # NEW: Edge-aware loss weight
+    
+    # Deprecated (multiscale didn't work)
+    MULTISCALE_WEIGHT = 0.0  # Disabled
+    
     # ========================================
     # PATHS
     # ========================================
     DATASET_PATH = 'data/maps/'
-    CHECKPOINT_DIR = 'checkpoints/exp_multiscale/'  # New directory
+    CHECKPOINT_DIR = 'checkpoints/exp_edge_0.3/'  # Edge weight 0.3
     OUTPUT_DIR = 'outputs/'
     
     # ========================================
     # DEVICE
     # ========================================
     DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+    
     @classmethod
     def print_config(cls):
         """Print all configuration settings"""
@@ -85,7 +87,8 @@ class Config:
         print(f"Loss Weights:")
         print(f"  - L1: {cls.L1_WEIGHT}")
         print(f"  - Perceptual: {cls.PERCEPTUAL_WEIGHT}")
-        print(f"  - Multiscale: {cls.MULTISCALE_WEIGHT}")
+        print(f"  - Edge-Aware: {cls.EDGE_WEIGHT}")
+        print(f"  - Multiscale: {cls.MULTISCALE_WEIGHT} (disabled)")
         print(f"Device: {cls.DEVICE}")
         print(f"Dataset Path: {cls.DATASET_PATH}")
         print(f"Checkpoint Dir: {cls.CHECKPOINT_DIR}")

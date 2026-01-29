@@ -1,0 +1,57 @@
+{
+    "baseline": {
+        "mae": 9576.370782459586,
+        "psnr": 27.58069452856627,
+        "ssim": 0.7711619734764099,
+        "pixel_accuracy": 64.02503119574652,
+        "experiment_name": "baseline",
+        "checkpoint": "checkpoints/baseline/best_model.pth",
+        "timestamp": "2026-01-29 14:04:39",
+        "config": {
+            "L1_WEIGHT": 1.0,
+            "PERCEPTUAL_WEIGHT": 0.01,
+            "MULTISCALE_WEIGHT": 0.0,
+            "LEARNING_RATE": 0.0001,
+            "BATCH_SIZE": 4
+        }
+    },
+    "multiscale": {
+        "mae": 12255.683433657787,
+        "psnr": 26.196576964410795,
+        "ssim": 0.6813568472862244,
+        "pixel_accuracy": 51.15232762960354,
+        "experiment_name": "multiscale",
+        "checkpoint": "checkpoints/exp_multiscale/best_model.pth",
+        "timestamp": "2026-01-29 14:05:09",
+        "config": {
+            "L1_WEIGHT": 1.0,
+            "PERCEPTUAL_WEIGHT": 0.01,
+            "MULTISCALE_WEIGHT": 0.5,
+            "LEARNING_RATE": 0.0001,
+            "BATCH_SIZE": 4
+        }
+    },
+    "improvements": {
+        "mae": {
+            "absolute_difference": -2679.312651198201,
+            "percentage_improvement": -27.97837210006241,
+            "is_better": true
+        },
+        "psnr": {
+            "absolute_difference": -1.3841175641554742,
+            "percentage_improvement": -5.018428969299146,
+            "is_better": false
+        },
+        "ssim": {
+            "absolute_difference": -0.08980512619018555,
+            "percentage_improvement": -11.645429790234946,
+            "is_better": false
+        },
+        "pixel_accuracy": {
+            "absolute_difference": -12.872703566142981,
+            "percentage_improvement": -20.105735718873298,
+            "is_better": false
+        }
+    },
+    "verdict": "\u2717 MULTISCALE LOSS DOES NOT IMPROVE RESULTS"
+}
